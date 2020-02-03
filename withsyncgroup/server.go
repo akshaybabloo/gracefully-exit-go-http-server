@@ -15,18 +15,18 @@ var wg sync.WaitGroup
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	_, err := fmt.Fprintln(w, "<h1>Home of SyncGroup</h1>")
-	if err != nil{
+	_, err := fmt.Fprintln(w, "<h1>Home of SyncGroup</h1><br><a href='/exit'>Exit</a>")
+	if err != nil {
 		panic(err)
 	}
 }
 
-func ExitHandler(w http.ResponseWriter, r *http.Request)  {
+func ExitHandler(w http.ResponseWriter, r *http.Request) {
 	// subtract 1 from the WaitGroup
 	defer wg.Done()
 	w.WriteHeader(http.StatusOK)
 	_, err := fmt.Fprintln(w, "<h1>Bye from SyncGroup</h1>")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 }
@@ -36,7 +36,7 @@ func StartServer() {
 	// add an integer, as there is only one exit that we want so add 1
 	wg.Add(1)
 
-	r:= mux.NewRouter()
+	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/exit", ExitHandler)
 

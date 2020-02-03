@@ -16,16 +16,16 @@ type httpServerHelper struct {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	_, err := fmt.Fprintln(w, "<h1>Home of Context</h1>")
-	if err != nil{
+	_, err := fmt.Fprintln(w, "<h1>Home of Context</h1><br><a href='/exit'>Exit</a>")
+	if err != nil {
 		panic(err)
 	}
 }
 
-func (helper *httpServerHelper) ExitHandler(w http.ResponseWriter, r *http.Request)  {
+func (helper *httpServerHelper) ExitHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := fmt.Fprintln(w, "<h1>Bye from Context</h1>")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	// Execute a cancel function
@@ -34,8 +34,8 @@ func (helper *httpServerHelper) ExitHandler(w http.ResponseWriter, r *http.Reque
 
 func StartServer() {
 	stopHTTPServerCtx, cancel := context.WithCancel(context.Background())
-	serverHelper := &httpServerHelper{cancelFunc:cancel}
-	r:= mux.NewRouter()
+	serverHelper := &httpServerHelper{cancelFunc: cancel}
+	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/exit", serverHelper.ExitHandler)
 
@@ -50,7 +50,6 @@ func StartServer() {
 	}
 
 	go func() {
-
 		// always returns error. ErrServerClosed on graceful close
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 			// unexpected error. port in use?
@@ -59,7 +58,7 @@ func StartServer() {
 	}()
 
 	// Wait till a cancel is executed
-	<- stopHTTPServerCtx.Done()
+	<-stopHTTPServerCtx.Done()
 	if err := srv.Shutdown(stopHTTPServerCtx); err != nil && err != context.Canceled {
 		panic(err) // failure/timeout shutting down the server gracefully
 	}

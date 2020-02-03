@@ -14,16 +14,16 @@ var stopHTTPServerChan chan bool
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	_, err := fmt.Fprintln(w, "<h1>Home of Channels</h1>")
-	if err != nil{
+	_, err := fmt.Fprintln(w, "<h1>Home of Channels</h1><br><a href='/exit'>Exit</a>")
+	if err != nil {
 		panic(err)
 	}
 }
 
-func ExitHandler(w http.ResponseWriter, r *http.Request)  {
+func ExitHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := fmt.Fprintln(w, "<h1>Bye from Channels</h1>")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	// sends a signal to the channel, this could even be false it doesn't matter
@@ -32,7 +32,7 @@ func ExitHandler(w http.ResponseWriter, r *http.Request)  {
 
 func StartServer() {
 	stopHTTPServerChan = make(chan bool)
-	r:= mux.NewRouter()
+	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/exit", ExitHandler)
 
@@ -47,7 +47,6 @@ func StartServer() {
 	}
 
 	go func() {
-
 		// always returns error. ErrServerClosed on graceful close
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 			// unexpected error. port in use?
@@ -56,7 +55,7 @@ func StartServer() {
 	}()
 
 	// wait here till a signal is received
-	<- stopHTTPServerChan
+	<-stopHTTPServerChan
 	if err := srv.Shutdown(context.TODO()); err != nil {
 		panic(err) // failure/timeout shutting down the server gracefully
 	}
